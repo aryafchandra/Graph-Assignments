@@ -220,33 +220,6 @@ class Graph:
     def return_graph2(self):
         return self.adj_list01
 
-
-
-    '''
-    BISMILLAHI ALLAHUAKBAR
-    BISMILLAHI ALLAHUAKBAR
-    BISMILLAHI ALLAHUAKBAR
-    BISMILLAHI ALLAHUAKBAR
-    BISMILLAHI ALLAHUAKBAR
-    BISMILLAHI ALLAHUAKBAR
-    BISMILLAHI ALLAHUAKBAR
-    BISMILLAHI ALLAHUAKBAR
-    BISMILLAHI ALLAHUAKBAR
-    
-7 10
-INSERT 0 1 2 3
-INSERT 0 1 3 6
-INSERT 0 2 3 1
-INSERT 0 3 4 20
-INSERT 0 4 5 1234
-INSERT 0 5 6 11
-INSERT 1 4 5
-INSERT 1 6 3
-DELETE 1 4 5
-IS_CONNECTED 1 2
-    '''
-
-
 # mulai = t.time()
 inPut = stdin.readline().split()
 graph = Graph(int(inPut[0]))
