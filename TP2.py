@@ -1,22 +1,14 @@
 # Graph Using Adjacency List
 from sys import stdin
-#import time as t
+
+# import time as t
 
 '''
 Author       : Arya Fakhruddin Chandra
 NPM          : 2006607526
-Collaborator : YouTube Videos, 
+Collaborator : YouTube Videos, Anastasia Audi, 
 '''
-class Edge:
-    def __init__ (self, road, origin, destination, length = 0):
-        self.road = road
-        self.origin = origin
-        self.destination = destination
-        self.length = length
 
-class Vertex:
-    def __init__(self, city):
-        self.city = city
 
 class Graph:
     def __init__(self, vertex):
@@ -121,7 +113,7 @@ class Graph:
                     self.adj_list[origin].remove(y)
                     break
 
-    def bfs(self, origin, destination):
+    def is_connected(self, origin, destination):
         visited = []
         queue = []
         graph = self.adj_list.copy()
@@ -137,19 +129,64 @@ class Graph:
                     visited.append(x[1])
                     queue.append(x[1])
                     if x[1] == destination:
-                        print('1')
+                        print(1)
                         lanjut = False
                         break
 
-            if lanjut == True:
-                print('0')
-                break
+        if lanjut == True:
+            print(0)
 
+    def min_path(self, origin, destination):
+        visited = []
+        queue = []
+        graph = self.adj_list.copy()
+        path = 0
+        visited.append(origin)
+        queue.append(origin)
+        lanjut = True
 
+        while queue:
+            s = queue.pop(0)
 
+            for x in graph[s]:
+                if x[1] not in visited:
+                    visited.append(x[1])
+                    queue.append(x[1])
+                    path += 1
+                    if x[1] == destination:
+                        print(path)
+                        lanjut = False
+                        break
 
+        if lanjut == True:
+            print(-1)
 
+    def count_city(self, origin, distance):
+        total_city = 0
+        visited = []
+        queue = []
+        graph = self.adj_list0.copy()
+        visited.append(origin)
+        total_city += 1
+        distance -= graph[0]
+        queue.append(origin)
+        lanjut = True
 
+        while queue:
+            s = queue.pop(0)
+
+            for x in graph[s]:
+                if x[0] not in visited:
+                    visited.append(x[0])
+                    queue.append(x[0])
+                    total_city += 1
+                    distance -= x[1]
+                    if distance <= 0:
+                        print(total_city)
+                        lanjut = False
+                        break
+        if lanjut == True:
+            print(total_city)
 
     def dijkstra0(self, origin, destination):
         # print('start',origin,destination)
@@ -177,7 +214,6 @@ class Graph:
 
             road_option = self.adj_list0[min_distance_vertex]
 
-
             for destinasi, panjang in road_option:
 
                 if panjang + shortest_distance[min_distance_vertex] < shortest_distance[destinasi]:
@@ -194,19 +230,12 @@ class Graph:
                 currentVertex = road_predecessor[currentVertex]
 
             except KeyError:
-                print('-1')
+                print(-1)
                 break
 
         road.insert(0, origin)
         if shortest_distance[destination] != infinity:
             print(str(shortest_distance[destination]))
-
-        # def dijkstra1(self, origin, destination):
-        shortest_distance = {}  # records the length to reach the target vertex
-        road_predecessor = {}  # records the road before current vertex
-        vertex_unseen = self.adj_list01.copy()
-        infinity = 99999999999999
-        road = []
 
     def return_graph(self):
         return self.adj_list
@@ -219,6 +248,7 @@ class Graph:
 
     def return_graph2(self):
         return self.adj_list01
+
 
 # mulai = t.time()
 inPut = stdin.readline().split()
@@ -242,137 +272,17 @@ for i in range(int(inPut[1])):
     if QUERY[0] == 'SHORTEST_PATH':
         if QUERY[1] == '0':
             graph.dijkstra0(int(QUERY[2]), int(QUERY[3]))
+        if QUERY[1] == '1':
+            print('hai')
 
     if QUERY[0] == 'IS_CONNECTED':
-        graph.bfs(int(QUERY[1]), int(QUERY[2]))
-print('general')
-grp = graph.return_graph()
-print(grp)
-print('-' * 20)
-'''stop = t.time()
-print(stop-mulai)
+        graph.is_connected(int(QUERY[1]), int(QUERY[2]))
 
+    if QUERY[0] == 'MIN_PATH':
+        graph.min_path(int(QUERY[1]), int(QUERY[2]))
 
-print('Type 0')
-grp0 = graph.return_graph0()
-print(grp0)
-print('-' * 20)
-
-print('Type 1')
-grp1 = graph.return_graph1()
-print(grp1)
-print('-' * 20)
-
-print('Type 01')
-grp2 = graph.return_graph2()
-print(grp2)
-print('-' * 20)'''
-
-'''print('General')
+    if QUERY[0] == 'COUNT_CITY':
+        graph.count_city(int(QUERY[1]), int(QUERY[2]))
 
 '''
-
-###
 '''
-8 
-9
-0 1 20
-0 6 123
-1 3 4
-1 2 73
-3 7 59
-3 5 37
-2 4 30
-2 5 30
-6 7 42
-
-
-7 6
-INSERT 0 1 2 3
-INSERT 0 1 3 6
-INSERT 0 2 3 1
-INSERT 0 3 4 20
-INSERT 0 5 6 11
-DELETE 0 1 2
-
-General
-{0: [], 1: [[0, 3, 6]], 2: [[0, 3, 1]], 3: [[0, 1, 6], [0, 2, 1], [0, 4, 20]], 4: [[0, 3, 20]], 5: [[0, 6, 11]], 6: [[0, 5, 11]]}
---------------------
-Type 0
-{0: [], 1: [[3, 6]], 2: [[3, 1]], 3: [[1, 6], [2, 1], [4, 20]], 4: [[3, 20]], 5: [[6, 11]], 6: [[5, 11]]}
---------------------
-Type 1
-{0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: []}
---------------------
-Type 2
-{0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: []}
-
-7 6
-INSERT 0 1 2 3
-INSERT 0 1 3 6
-INSERT 0 2 3 1
-INSERT 0 3 4 20
-INSERT 0 5 6 11
-
-
-7 5
-INSERT 0 1 2 3
-INSERT 0 1 3 6
-INSERT 0 2 3 1
-INSERT 0 3 4 20
-INSERT 0 5 6 11
-
-7 8
-INSERT 0 1 2 3
-INSERT 0 1 3 6
-INSERT 0 2 3 1
-INSERT 0 3 4 20
-INSERT 0 5 6 11
-SHORTEST_PATH 0 1 2
-SHORTEST_PATH 0 1 3
-SHORTEST_PATH 0 4 1
-
-
-7 9
-INSERT 0 1 2 3
-INSERT 0 1 3 6
-INSERT 0 2 3 1
-INSERT 0 3 4 20
-INSERT 0 4 5 1234
-INSERT 0 5 6 11
-INSERT 1 4 5
-INSERT 1 6 3
-DELETE 1 4 5
-
-
-7 8
-INSERT 0 1 2 3
-INSERT 0 2 3 4
-INSERT 0 3 4 5
-INSERT 0 4 5 7
-INSERT 0 5 6 2
-INSERT 1 1 6
-SHORTEST_PATH 0 3 4
-SHORTEST_PATH 0 1 6
-
-7 6
-INSERT 0 1 2 3
-INSERT 0 1 3 6
-INSERT 0 2 3 1
-INSERT 0 3 4 20
-INSERT 0 5 6 11
-IS_CONNECTED 4 2
-
-
-7 8
-INSERT 0 1 2 3
-INSERT 0 1 3 6
-INSERT 0 2 3 1
-INSERT 0 3 4 20
-INSERT 0 5 6 11
-IS_CONNECTED 4 2
-IS_CONNECTED 1 5
-IS_CONNECTED 0 6
-
-'''
-###
