@@ -140,59 +140,31 @@ class Graph:
         visited = []
         queue = []
         graph = self.adj_list.copy()
-        path = 0
-        depth = 0
-        visited.append(origin)
-        queue.append(origin)
+        visited.append(destination)
+        queue.append(destination)
 
 
         while queue:
             s = queue.pop(0)
-            if path > depth:
-                path = 1
 
             for x in graph[s]:
                 if x[1] not in visited:
                     visited.append(x[1])
                     queue.append(x[1])
-                    if x[1] == destination:
-                        return path+1
-                    path += 1
+                    if x[1] == origin:
+                        return len(visited)-1
 
         return -1
 
     def count_city(self, origin, distance):
-        # ADAPTASI DARI TEMEN ALMA
-        visited = []
-        queue = []
-        jarak = distance
-        graph = self.adj_list0.copy()
-        visited.append(origin)
-        queue.append(origin)
 
-
-        while queue:
-            s = queue.pop(0)
-
-
-
-            for x in graph[s]:
-                if x[0] not in visited:
-                    visited.append(x[0])
-                    queue.append(x[0])
-                    jarak -= x[1]
-                    if jarak < 1:
-                        return len(visited)-1
-        return len(visited)
-
-
-    def dijkstra0(self, origin, destination):
         # print('start',origin,destination)
         shortest_distance = {}  # records the length to reach the target vertex
         road_predecessor = {}  # records the road before current vertex
         vertex_unseen = self.adj_list0.copy()
         infinity = 99999999999999
         road = []
+        totalcity=0
 
         for vertex in vertex_unseen:
             shortest_distance[vertex] = infinity
@@ -221,6 +193,79 @@ class Graph:
 
             vertex_unseen.pop(min_distance_vertex)
 
+        currentVertex = origin
+        while currentVertex != origin:
+            try:
+                road.insert(0, currentVertex)
+                currentVertex = road_predecessor[currentVertex]
+
+            except KeyError:
+                print(-1)
+                break
+
+        road.insert(0, origin)
+        for i in shortest_distance:
+            if shortest_distance[i] <= distance:
+                totalcity+=1
+        return totalcity
+
+
+
+    def count_connected(self):
+        visited = []
+        queue = []
+        count = []
+        graph = self.adj_list0.copy()
+
+        for i in range(len(graph)):
+            if i in visited:
+                continue
+            else:
+                visited.append(i)
+            count.append(0)
+            queue.append(i)
+
+            while queue:
+                s = queue.pop(0)
+
+                for x in graph[s]:
+                    if x[0] not in visited:
+                        visited.append(x[0])
+                        queue.append(x[0])
+
+        return len(count)
+
+
+    def dijkstra0(self, origin, destination):
+        # print('start',origin,destination)
+        shortest_distance = {}  # records the length to reach the target vertex
+        road_predecessor = {}  # records the road before current vertex
+        vertex_unseen = self.adj_list0.copy()
+        infinity = 99999999999999
+        road = []
+
+        for vertex in vertex_unseen:
+            shortest_distance[vertex] = infinity
+        shortest_distance[origin] = 0
+
+        while vertex_unseen:
+            min_distance_vertex = None
+
+            for vertex in vertex_unseen:
+                if min_distance_vertex is None:
+                    min_distance_vertex = vertex
+                elif shortest_distance[vertex] < shortest_distance[min_distance_vertex]:
+                    min_distance_vertex = vertex
+
+            road_option = self.adj_list0.copy()[min_distance_vertex]
+
+            for destinasi, panjang in road_option:
+                if panjang + shortest_distance[min_distance_vertex] < shortest_distance[destinasi]:
+                    shortest_distance[destinasi] = panjang + shortest_distance[min_distance_vertex]
+                    road_predecessor[destinasi] = min_distance_vertex
+
+            vertex_unseen.pop(min_distance_vertex)
+
         currentVertex = destination
         while currentVertex != origin:
             try:
@@ -235,6 +280,24 @@ class Graph:
         if shortest_distance[destination] != infinity:
             print(str(shortest_distance[destination]))
 
+    def simulate_walk(self, origin, distance):
+        graph = self.adj_list0.copy()
+        loop = 0
+        now = origin
+        while True:
+            for i in range(len(graph)):
+                for x in graph[i]:
+                    loop += 1
+                    distance -= 1
+                    if i == origin:
+                        distance = distance % loop
+                        print(distance)
+                    now = i
+                    if distance == 0:
+                        return now
+                    break
+
+
     def return_graph(self):
         return self.adj_list
 
@@ -248,8 +311,9 @@ class Graph:
         return self.adj_list01
 
 
-mulai = t.time()
+
 inPut = stdin.readline().split()
+mulai = t.time()
 graph = Graph(int(inPut[0]))
 
 for i in range(int(inPut[1])):
@@ -257,30 +321,25 @@ for i in range(int(inPut[1])):
     if QUERY[0] == 'INSERT':
         if QUERY[1] == '0':
             graph.add_edge(int(QUERY[1]), int(QUERY[2]), int(QUERY[3]), int(QUERY[4]))
-
         elif QUERY[1] == '1':
             graph.add_edge(int(QUERY[1]), int(QUERY[2]), int(QUERY[3]))
-
         elif QUERY[1] == '2':
             graph.add_edge(int(QUERY[1]), int(QUERY[2]), int(QUERY[3]))
-
     if QUERY[0] == 'DELETE':
         graph.delete_edge(int(QUERY[1]), int(QUERY[2]), int(QUERY[3]))
-
     if QUERY[0] == 'SHORTEST_PATH':
         if QUERY[1] == '0':
             graph.dijkstra0(int(QUERY[2]), int(QUERY[3]))
-
-
-
     if QUERY[0] == 'IS_CONNECTED':
         graph.is_connected(int(QUERY[1]), int(QUERY[2]))
-
     if QUERY[0] == 'MIN_PATH':
         print(graph.min_path(int(QUERY[1]), int(QUERY[2])))
-
     if QUERY[0] == 'COUNT_CITY':
         print(graph.count_city(int(QUERY[1]), int(QUERY[2])))
+    if QUERY[0] == 'COUNT_CONNECTED':
+        print(graph.count_connected())
+    if QUERY[0] == 'SIMULATE_WALK':
+        print(graph.simulate_walk(int(QUERY[1]), int(QUERY[2])))
 end = t.time()
-print(end-mulai)
+print('ELAPSED: ',end-mulai)
 
