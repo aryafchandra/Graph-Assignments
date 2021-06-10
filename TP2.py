@@ -1,7 +1,7 @@
 # Graph Using Adjacency List
 from sys import stdin
 
-# import time as t
+import time as t
 
 '''
 Author       : Arya Fakhruddin Chandra
@@ -141,52 +141,50 @@ class Graph:
         queue = []
         graph = self.adj_list.copy()
         path = 0
+        depth = 0
         visited.append(origin)
         queue.append(origin)
-        lanjut = True
+
 
         while queue:
             s = queue.pop(0)
+            if path > depth:
+                path = 1
 
             for x in graph[s]:
                 if x[1] not in visited:
                     visited.append(x[1])
                     queue.append(x[1])
-                    path += 1
                     if x[1] == destination:
-                        print(path)
-                        lanjut = False
-                        break
+                        return path+1
+                    path += 1
 
-        if lanjut == True:
-            print(-1)
+        return -1
 
     def count_city(self, origin, distance):
-        total_city = 0
+        # ADAPTASI DARI TEMEN ALMA
         visited = []
         queue = []
+        jarak = distance
         graph = self.adj_list0.copy()
         visited.append(origin)
-        total_city += 1
-        distance -= graph[0]
         queue.append(origin)
-        lanjut = True
+
 
         while queue:
             s = queue.pop(0)
+
+
 
             for x in graph[s]:
                 if x[0] not in visited:
                     visited.append(x[0])
                     queue.append(x[0])
-                    total_city += 1
-                    distance -= x[1]
-                    if distance <= 0:
-                        print(total_city)
-                        lanjut = False
-                        break
-        if lanjut == True:
-            print(total_city)
+                    jarak -= x[1]
+                    if jarak < 1:
+                        return len(visited)-1
+        return len(visited)
+
 
     def dijkstra0(self, origin, destination):
         # print('start',origin,destination)
@@ -250,7 +248,7 @@ class Graph:
         return self.adj_list01
 
 
-# mulai = t.time()
+mulai = t.time()
 inPut = stdin.readline().split()
 graph = Graph(int(inPut[0]))
 
@@ -272,17 +270,17 @@ for i in range(int(inPut[1])):
     if QUERY[0] == 'SHORTEST_PATH':
         if QUERY[1] == '0':
             graph.dijkstra0(int(QUERY[2]), int(QUERY[3]))
-        if QUERY[1] == '1':
-            print('hai')
+
+
 
     if QUERY[0] == 'IS_CONNECTED':
         graph.is_connected(int(QUERY[1]), int(QUERY[2]))
 
     if QUERY[0] == 'MIN_PATH':
-        graph.min_path(int(QUERY[1]), int(QUERY[2]))
+        print(graph.min_path(int(QUERY[1]), int(QUERY[2])))
 
     if QUERY[0] == 'COUNT_CITY':
-        graph.count_city(int(QUERY[1]), int(QUERY[2]))
+        print(graph.count_city(int(QUERY[1]), int(QUERY[2])))
+end = t.time()
+print(end-mulai)
 
-'''
-'''
