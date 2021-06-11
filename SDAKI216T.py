@@ -1,6 +1,8 @@
 # Graph Using Adjacency List
 from sys import stdin
 from collections import deque
+import heapq
+
 '''
 Author       : Arya Fakhruddin Chandra
 NPM          : 2006607526
@@ -41,9 +43,6 @@ class Graph:
         if tipe == 0:
             temp_origin_list0 = self.adj_list0[origin]
             temp_destination_list0 = self.adj_list0[destination]
-            # tipe, deswtinasi, length
-            # if x[0] == road and x[1] == dest:
-            #
             for x in temp_origin_list0:
                 if x[0] == destination:
                     self.adj_list0[origin].remove(x)
@@ -124,37 +123,52 @@ class Graph:
             print(0)
 
     def min_path(self, origin, destination):
-        def min_path(self, origin, destination):
-            graph = self.adj_list0
-            distance = {origin: 0}
-            queue = deque([origin])
+        graph = self.adj_list0
+        distance = {origin: 0}
+        queue = deque([origin])
 
-            while queue:
-                u = queue.popleft()
-                d = distance[u] + 1
-                for i in graph[u]:
-                    if i[0] not in distance:
-                        if i[0] == destination:
-                            return d
-                        distance[i[0]] = d
-                        queue.append(i[0])
-            return -1
+        while queue:
+            u = queue.popleft()
+            d = distance[u] + 1
+            for i in graph[u]:
+                if i[0] not in distance:
+                    if i[0] == destination:
+                        return d
+                    distance[i[0]] = d
+                    queue.append(i[0])
+        return -1
 
     def count_city(self, origin, distance):
-        graph = self.adj_list0
-        visited = [origin]
-        queue = [origin]
-        jarak = distance
-        while queue:
-            s = queue.pop(0)
-            for x in graph[s]:
-                if x[0] not in visited and jarak > 0:
-                    visited.append(x[0])
-                    queue.append(x[0])
-                    jarak -= x[1]
-                    if jarak <= 0:
-                        return len(visited) - 1
-        return len(visited)
+        shortest_distance = {}  # records the length to reach the target vertex
+        road_predecessor = {}  # records the road before current vertex
+        vertex_unseen = self.adj_list0.copy()
+        infinity = 99999999999999
+
+        totalcity = 0
+        for vertex in vertex_unseen:
+            shortest_distance[vertex] = infinity
+        shortest_distance[origin] = 0
+        while vertex_unseen:
+            min_distance_vertex = None
+            for vertex in vertex_unseen:
+                if min_distance_vertex is None:
+                    min_distance_vertex = vertex
+                elif shortest_distance[vertex] < shortest_distance[min_distance_vertex]:
+                    min_distance_vertex = vertex
+
+            road_option = self.adj_list0[min_distance_vertex]
+
+            for destinasi, panjang in road_option:
+                if panjang + shortest_distance[min_distance_vertex] < shortest_distance[destinasi]:
+                    shortest_distance[destinasi] = panjang + shortest_distance[min_distance_vertex]
+
+                    road_predecessor[destinasi] = min_distance_vertex
+
+            vertex_unseen.pop(min_distance_vertex)
+        for x in shortest_distance:
+            if shortest_distance[x] <= distance:
+                totalcity += 1
+        return totalcity
 
     def count_connected(self):
         visited = []
@@ -200,7 +214,7 @@ class Graph:
                 elif shortest_distance[vertex] < shortest_distance[min_distance_vertex]:
                     min_distance_vertex = vertex
 
-            road_option = self.adj_list0.copy()[min_distance_vertex]
+            road_option = self.adj_list0[min_distance_vertex].copy()
 
             for destinasi, panjang in road_option:
                 if panjang + shortest_distance[min_distance_vertex] < shortest_distance[destinasi]:
@@ -216,12 +230,11 @@ class Graph:
                 currentVertex = road_predecessor[currentVertex]
 
             except KeyError:
-                print(-1)
-                break
+                return -1
 
         road.insert(0, origin)
         if shortest_distance[destination] != infinity:
-            print(str(shortest_distance[destination]))
+            return shortest_distance[destination]
 
     def simulate_walk(self, origin, distance):
         graph = self.adj_list2
@@ -237,7 +250,6 @@ class Graph:
                     walk += 1
                     visited.append(i[0])
                     if i[0] == origin:
-                        lanjut = False
                         return visited[distance % (len(visited) - 1)]
                 now = i[0]
             if len(i) == 0:
@@ -254,9 +266,6 @@ class Graph:
 
     def return_graph2(self):
         return self.adj_list2
-
-    def return_graph01(self):
-        return self.adj_list01
 
 
 inPut = stdin.readline().split()
@@ -275,7 +284,7 @@ for i in range(int(inPut[1])):
         graph.delete_edge(int(QUERY[1]), int(QUERY[2]), int(QUERY[3]))
     if QUERY[0] == 'SHORTEST_PATH':
         if QUERY[1] == '0':
-            graph.dijkstra0(int(QUERY[2]), int(QUERY[3]))
+            print(graph.dijkstra0(int(QUERY[2]), int(QUERY[3])))
         if QUERY[1] == '1':
             print('belum [DJIKSTRA1]')
     if QUERY[0] == 'IS_CONNECTED':
